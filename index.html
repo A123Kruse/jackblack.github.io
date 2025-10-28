@@ -1,157 +1,137 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Blackjack 21 — Login</title>
-  <meta name="description" content="Login to Blackjack 21" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0a0f0d;
-      --felt:#0f3d2e;
-      --felt-2:#115f45;
-      --card:#ffffff;
-      --ink:#e7f6ef;
-      --muted:#9fd6bf;
-      --accent:#e2c044;
-      --danger:#ff6b6b;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 16px;
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body{
-      margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      color: var(--ink); background: radial-gradient(1200px 800px at 20% 20%, var(--felt-2), var(--bg));
-      display:grid; place-items:center; padding: 24px;
-    }
-    .login-shell{ width: 100%; max-width: 980px; display:grid; grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: stretch; }
-    @media (max-width: 880px){ .login-shell{ grid-template-columns: 1fr; } }
-    .brand-panel{ position: relative; padding: 28px; border-radius: var(--radius); background: linear-gradient(145deg, rgba(17,95,69,.85), rgba(10,15,13,.85)); box-shadow: var(--shadow); overflow:hidden; }
-    .brand-grid{ position:absolute; inset:0; background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px); background-size: 18px 18px; mask-image: radial-gradient(60% 60% at 50% 40%, black, transparent); pointer-events:none; }
-    .logo{ display:flex; align-items:center; gap:12px; }
-    .chip{ width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg,#ffd166,#cfa83d); box-shadow: inset 0 1px 2px rgba(255,255,255,.4), inset 0 -2px 6px rgba(0,0,0,.2), 0 2px 10px rgba(0,0,0,.25); display:grid; place-items:center; color:#1a1a1a; font-weight:700; }
-    .logo h1{ margin:0; font-size: 28px; letter-spacing:.5px; }
-    .sub{ color: var(--muted); margin-top: 6px; }
-    .card-fan{ position:absolute; right:-40px; bottom:-40px; width: 420px; height: 420px; transform: rotate(-12deg); opacity:.95; }
-    .card{ position:absolute; width:180px; height:260px; border-radius: 16px; background: var(--card); color:#111; box-shadow: var(--shadow); display:grid; grid-template-rows: auto 1fr auto; padding:14px; }
-    .card:nth-child(1){ left:40px; top:60px; transform: rotate(-8deg); }
-    .card:nth-child(2){ left:120px; top:120px; transform: rotate(6deg); }
-    .card:nth-child(3){ left:200px; top:180px; transform: rotate(18deg); }
-    .pip{ font-size: 28px; }
-    .pip.red{ color:#d22525; }
-    .corner{ align-self:start; }
-    .center{ display:grid; place-items:center; font-size: 72px; }
-    .bottom{ align-self:end; justify-self:end; transform: rotate(180deg); }
-    .panel{ background: rgba(7,10,9,.7); border: 1px solid rgba(255,255,255,.08); backdrop-filter: blur(8px); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
-    .panel h2{ margin:0 0 6px; font-size: 24px; }
-    .panel p.lead{ margin:0 0 22px; color: var(--muted); }
-    form { display:grid; gap: 14px; }
-    label { font-weight: 600; font-size: 14px; }
-    .field{ display:grid; gap: 8px; }
-    .input-wrap{ display:flex; align-items:center; gap: 8px; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 10px 12px; }
-    .input-wrap:focus-within{ outline: 2px solid var(--accent); outline-offset: 2px; }
-    .input-wrap input{ flex:1; border:0; outline: none; background: transparent; color: var(--ink); font-size: 16px; }
-    .input-wrap button.icon{ border:0; background:transparent; cursor:pointer; padding:6px; border-radius:8px; }
-    .input-wrap button.icon:focus{ outline:2px solid var(--accent); }
-    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .checkbox{ display:flex; align-items:center; gap:10px; }
-    .checkbox input{ width:18px; height:18px; }
-    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; font-weight:700; font-size:16px; cursor:pointer; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,.2); text-decoration:none; background: linear-gradient(180deg, #f0d77a, #caa93b); color:#1b1b1b; box-shadow: 0 6px 14px rgba(0,0,0,.25); }
-    .btn:hover{ filter: brightness(1.05); }
-    .btn:active{ transform: translateY(1px); }
-    .btn-secondary{ background: rgba(255,255,255,.1); color: var(--ink); border:1px solid rgba(255,255,255,.2); box-shadow:none; }
-    .btn-secondary:hover{ background: rgba(255,255,255,.2); }
-    .mutelink{ color: var(--muted); text-decoration:none; font-weight:600; }
-    .mutelink:hover{ text-decoration: underline; }
-    .error{ display:none; background: rgba(255, 59, 48, .12); color:#ffd7d7; border:1px solid rgba(255,59,48,.35); padding:10px 12px; border-radius:12px; font-size:14px; }
-    footer { margin-top: 16px; font-size: 13px; color: var(--muted); }
-  </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blackjack 21 — Login</title>
+    <meta name="description" content="Login to Blackjack 21" />
+    <!-- Fonts & Global Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <main class="login-shell" aria-labelledby="page-title">
-    <section class="brand-panel" aria-label="Blackjack 21 branding">
-      <div class="brand-grid" aria-hidden="true"></div>
-      <div class="logo" role="img" aria-label="Blackjack 21 logo">
-        <div class="chip">21</div>
-        <div>
-          <h1 id="page-title">Blackjack 21</h1>
-          <div class="sub">Play smart. Hit the table.</div>
-        </div>
-      </div>
-      <div class="card-fan" aria-hidden="true">
-        <div class="card"><div class="corner"><span class="pip">A♠</span></div><div class="center">♠</div><div class="bottom"><span class="pip">A♠</span></div></div>
-        <div class="card"><div class="corner"><span class="pip red">K♥</span></div><div class="center">♥</div><div class="bottom"><span class="pip red">K♥</span></div></div>
-        <div class="card"><div class="corner"><span class="pip">J♣</span></div><div class="center">♣</div><div class="bottom"><span class="pip">J♣</span></div></div>
-      </div>
-    </section>
+    <main class="login-shell" aria-labelledby="page-title">
+        <!-- Brand / Visual side -->
+        <section class="brand-panel" aria-label="Blackjack 21 branding">
+            <div class="brand-grid" aria-hidden="true"></div>
+            <div class="logo" role="img" aria-label="Blackjack 21 logo">
+                <div class="chip">21</div>
+                <div>
+                    <h1 id="page-title" class="logo-title">Blackjack 21</h1>
+                    <div class="logo-sub">Play smart. Hit the table.</div>
+                </div>
+            </div>
+            <div class="card-fan animate-float" aria-hidden="true">
+                <div class="card is-1">
+                    <div class="corner"><span class="pip">A♠</span></div>
+                    <div class="center">♠</div>
+                    <div class="bottom"><span class="pip">A♠</span></div>
+                </div>
+                <div class="card is-2">
+                    <div class="corner"><span class="pip red">K♥</span></div>
+                    <div class="center">♥</div>
+                    <div class="bottom"><span class="pip red">K♥</span></div>
+                </div>
+                <div class="card is-3">
+                    <div class="corner"><span class="pip">J♣</span></div>
+                    <div class="center">♣</div>
+                    <div class="bottom"><span class="pip">J♣</span></div>
+                </div>
+            </div>
+        </section>
 
-    <section class="panel" aria-label="Login form">
-      <h2>Welcome back</h2>
-      <p class="lead">Sign in to your Blackjack 21 account to continue.</p>
-      <div id="errorBox" class="error" role="alert" aria-live="polite">Invalid credentials. Please try again.</div>
-      <form id="loginForm" action="/login" method="POST" novalidate>
-        <div class="field">
-          <label for="email">Email or username</label>
-          <div class="input-wrap"><input id="email" name="email" type="text" inputmode="email" autocomplete="username" placeholder="you@casino.com" required aria-required="true" /></div>
-        </div>
-        <div class="field">
-          <label for="password">Password</label>
-          <div class="input-wrap"><input id="password" name="password" type="password" autocomplete="current-password" minlength="8" placeholder="••••••••" required aria-required="true" /><button class="icon" type="button" id="togglePw" aria-label="Show password" title="Show password">👁️</button></div>
-        </div>
-        <div class="row">
-          <label class="checkbox"><input type="checkbox" id="remember" name="remember" /><span>Remember me</span></label>
-          <a class="mutelink" href="/forgot-password">Forgot password?</a>
-        </div>
-        <button class="btn" type="submit" id="submitBtn">Sign In</button>
-        <button class="btn btn-secondary" type="button" id="guestBtn">Continue as Guest</button>
-        <footer>No account? <a class="mutelink" href="/register">Create one</a></footer>
-      </form>
-    </section>
-  </main>
-  <script>
-    const form = document.getElementById('loginForm');
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const errorBox = document.getElementById('errorBox');
-    const togglePw = document.getElementById('togglePw');
-    const guestBtn = document.getElementById('guestBtn');
+        <!-- Login form side -->
+        <section class="panel" aria-label="Login form">
+            <h2 class="panel-header">Welcome back</h2>
+            <p class="panel-subtle">Sign in to your Blackjack 21 account to continue.</p>
 
-    togglePw.addEventListener('click', () => {
-      const showing = password.getAttribute('type') === 'text';
-      password.setAttribute('type', showing ? 'password' : 'text');
-      togglePw.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
-      togglePw.title = showing ? 'Show password' : 'Hide password';
-      togglePw.textContent = showing ? '👁️' : '🙈';
-    });
+            <div id="errorBox" class="error" role="alert" aria-live="polite">Invalid credentials. Please try again.</div>
 
-    form.addEventListener('submit', (e) => {
-      errorBox.style.display = 'none';
-      const emailVal = email.value.trim();
-      const passVal = password.value.trim();
-      if (!emailVal || !passVal) {
-        e.preventDefault();
-        errorBox.textContent = 'Please fill out all fields.';
-        errorBox.style.display = 'block';
-        return;
-      }
-      if (passVal.length < 8) {
-        e.preventDefault();
-        errorBox.textContent = 'Password must be at least 8 characters.';
-        errorBox.style.display = 'block';
-        return;
-      }
-      e.preventDefault();
-      errorBox.style.display = 'block';
-      errorBox.textContent = 'Demo only — wire this form to your backend at /login.';
-    });
+            <form id="loginForm" class="form" action="/login" method="POST" novalidate>
+                <div class="field">
+                    <label for="email">Email or username</label>
+                    <div class="input-wrap">
+                        <input id="email" name="email" type="text" inputmode="email" autocomplete="username" placeholder="you@casino.com" required aria-required="true" />
+                    </div>
+                </div>
 
-    guestBtn.addEventListener('click', () => {
-      window.location.href = '/play-as-guest';
-    });
-  </script>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" placeholder="••••••••" required aria-required="true" />
+                        <button class="icon" type="button" id="togglePw" aria-label="Show password" title="Show password">👁️</button>
+                    </div>
+                </div>
+
+                <div class="cluster" style="justify-content:space-between;">
+                    <label class="checkbox">
+                        <input type="checkbox" id="remember" name="remember" />
+                        <span>Remember me</span>
+                    </label>
+                    <a class="mutelink" href="/forgot-password">Forgot password?</a>
+                </div>
+
+                <button class="btn" type="submit" id="submitBtn">Sign In</button>
+                <button class="btn btn-secondary" type="button" id="guestBtn">Continue as Guest</button>
+
+                <footer class="mt-4">
+                    No account? <a class="mutelink" href="register.html">Create one</a>
+                </footer>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const errorBox = document.getElementById('errorBox');
+        const togglePw = document.getElementById('togglePw');
+        const guestBtn = document.getElementById('guestBtn');
+
+        // Toggle password visibility
+        togglePw.addEventListener('click', () => {
+            const showing = password.getAttribute('type') === 'text';
+            password.setAttribute('type', showing ? 'password' : 'text');
+            togglePw.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+            togglePw.title = showing ? 'Show password' : 'Hide password';
+            togglePw.textContent = showing ? '👁️' : '🙈';
+        });
+
+        // Simple client-side validation demo
+        form.addEventListener('submit', (e) => {
+            errorBox.style.display = 'none';
+
+            const emailVal = email.value.trim();
+            const passVal = password.value.trim();
+
+            // Basic checks (replace with real validation/server auth)
+            if (!emailVal || !passVal) {
+                e.preventDefault();
+                errorBox.textContent = 'Please fill out all fields.';
+                errorBox.style.display = 'block';
+                return;
+            }
+            if (passVal.length < 8) {
+                e.preventDefault();
+                errorBox.textContent = 'Password must be at least 8 characters.';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // Demo: prevent actual navigation without backend
+            // Remove this block when wiring to your backend.
+            e.preventDefault();
+            errorBox.style.display = 'block';
+            errorBox.textContent = 'Demo only — wire this form to your backend at /login.';
+        });
+
+        // Guest flow — change the href to your desired route
+        guestBtn.addEventListener('click', () => {
+            window.location.href = '/play-as-guest';
+        });
+    </script>
 </body>
 </html>

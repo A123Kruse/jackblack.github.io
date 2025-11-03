@@ -238,14 +238,16 @@ label { font-weight: 600; font-size: var(--fs-14); }
 .toast.warn { border-color: rgba(226,192,68,.45); background: rgba(226,192,68,.12); }
 .toast.error { border-color: rgba(255,59,48,.35); background: rgba(255,59,48,.12); }
 
-/* Center login-shell perfectly in viewport */
-body {
+
+/* Center login-shell perfectly in viewport (login page only) */
+body.page--centered {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     padding: 20px;
 }
+
 
 /* Ensure proper stacking when on smaller screens */
 @media (max-width: 880px) {
@@ -256,5 +258,156 @@ body {
 
     .login-shell {
         margin: auto;
+    }
+}
+
+/* --- Layout positioning adjustments --- */
+
+/* Keep header at top but logo + profile spaced properly */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 40;
+    background: linear-gradient(180deg, rgba(10,15,13,.85), rgba(10,15,13,.4));
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    /* Adjust logo cluster */
+    .header .left {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    /* Fix profile button top-right cleanly */
+    .header .right {
+        position: static;
+        margin-left: auto;
+    }
+
+/* Keep footer centered at bottom */
+.footer {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: fit-content;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* Add spacing so content doesn't hide behind header/footer */
+body {
+    padding-top: 80px;
+    padding-bottom: 60px;
+}
+/* --- Avatar picker (profile) ------------------------------------------- */
+.avatar-btn {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    outline-offset: 4px;
+}
+
+    .avatar-btn img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+/* Popover panel */
+.avatar-picker {
+    position: absolute;
+    z-index: 60;
+    min-width: 260px;
+    background: rgba(7,10,9,.92);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-4);
+}
+
+    .avatar-picker h3 {
+        margin: 0 0 var(--space-3);
+        font-size: var(--fs-16);
+        color: var(--muted);
+    }
+
+/* Grid of avatars */
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 72px);
+    gap: var(--space-3);
+}
+
+.avatar-option {
+    border: 0;
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0;
+    width: 72px;
+    height: 72px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .06s ease, filter .15s ease, border-color .15s ease;
+}
+
+    .avatar-option:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+        border-color: var(--border-strong);
+    }
+
+    .avatar-option:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+    .avatar-option img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+.avatar-actions {
+    margin-top: var(--space-4);
+    display: flex;
+    justify-content: flex-end;
+}
+/* --- Avatar picker: animation & reduced motion ------------------------- */
+.avatar-picker {
+    opacity: 0;
+    transform: scale(.98);
+    transition: opacity .16s ease, transform .16s ease;
+    pointer-events: auto; /* shown/hidden is controlled via [hidden] + .is-open */
+}
+
+    .avatar-picker.is-open {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+@media (prefers-reduced-motion: reduce) {
+    .avatar-picker {
+        transition: none;
     }
 }

@@ -1,0 +1,170 @@
+﻿.table-wrap {
+    background: radial-gradient(800px 500px at 50% 30%, var(--felt-2, #11331f), transparent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+    position: relative;
+    min-height: 320px;
+}
+
+    .table-wrap::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+        background-size: 20px 20px;
+        mask-image: radial-gradient(70% 70% at 50% 40%, black, transparent);
+    }
+
+.row {
+    display: grid;
+    place-items: center;
+    margin: var(--space-6) 0;
+}
+
+.hand {
+    width: 100%;
+    max-width: 980px;
+}
+
+.label {
+    color: var(--muted);
+    margin-bottom: var(--space-2);
+    font-weight: 700;
+}
+
+.score {
+    margin-top: var(--space-2);
+    color: var(--muted);
+}
+
+
+/* Player hands grid */
+#playerHandsRow {
+    display: grid;
+    gap: 18px;
+}
+
+@media (min-width: 760px) {
+    #playerHandsRow {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+}
+
+.player-hand {
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+
+    .player-hand.active {
+        box-shadow: 0 0 0 3px rgba(61,255,155,.35), var(--shadow-lg);
+        transform: translateY(-2px);
+    }
+
+
+.cards {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 110px;
+    gap: 14px;
+    align-items: center;
+}
+
+.card-ui {
+    width: 110px;
+    height: 154px;
+    border-radius: 12px;
+    background: var(--card);
+    box-shadow: var(--shadow-lg);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 10px;
+    position: relative;
+    user-select: none;
+}
+
+    .card-ui .corner {
+        font-weight: 700;
+        font-size: var(--fs-16, 14px);
+    }
+
+    .card-ui .center {
+        display: grid;
+        place-items: center;
+        font-size: 42px;
+    }
+
+    .card-ui .red {
+        color: #d22525;
+    }
+
+    .card-ui.back {
+        background: linear-gradient(135deg,#1b1f1d,#0a0f0d);
+        border: 1px solid var(--border-strong);
+        display: grid;
+        place-items: center;
+    }
+
+        .card-ui.back::after {
+            content: "★";
+            opacity: .5;
+            font-size: 28px;
+        }
+
+
+/* Chips and bet UI */
+.chip-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    border: 0;
+    cursor: pointer;
+    font-weight: 800;
+    background: linear-gradient(180deg,#f0d77a,#caa93b);
+    box-shadow: var(--shadow-md);
+}
+
+.chip-5 {
+    filter: hue-rotate(-30deg) saturate(.8);
+}
+
+.chip-25 {
+    filter: hue-rotate(80deg) saturate(.9);
+}
+
+.chip-100 {
+    filter: hue-rotate(200deg) saturate(1);
+}
+
+
+.bet-line {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+}
+
+    .bet-line .muted {
+        color: var(--muted);
+    }
+
+
+#bankBadge, #shoeBadge {
+    font-size: var(--fs-14, 12px);
+}
+
+
+/* Responsive */
+@media (max-width: 560px) {
+    .cards {
+        grid-auto-columns: 90px;
+        gap: 10px;
+    }
+
+    .card-ui {
+        width: 90px;
+        height: 132px;
+    }
+}

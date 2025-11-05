@@ -19,6 +19,8 @@ console.log('[BJ] build=dev1');
     const totalWagerEl = document.getElementById('totalWager');
     const bankBadgeEl = document.getElementById('bankBadge');
     const shoeInfoEl = document.getElementById('shoeInfo');
+    const countInfoEl = document.getElementById('countInfo');
+    const countLabelEl = document.getElementById('countLabel');
 
     const chipButtons = document.querySelectorAll('.chip-btn');
     const dealBtn = document.getElementById('dealBtn');
@@ -31,6 +33,9 @@ console.log('[BJ] build=dev1');
     const insuranceBtn = document.getElementById('insuranceBtn');
     const handsSelect = document.getElementById('handsSelect');
     const resetBankBtn = document.getElementById('resetBankBtn');
+
+    const DECK_KEY = 'bjDeck';
+
 
     // ---- Constants / Config ----
     const BANK_KEY = 'bjBank';
@@ -82,6 +87,15 @@ console.log('[BJ] build=dev1');
         }
     }
 
+    // Hi-Lo count
+    let runningCount = 0;
+
+    function hiLoValue(rank) {
+        // 2–6: +1, 7–9: 0, 10–A: -1
+        if (['2', '3', '4', '5', '6'].includes(rank)) return 1;
+        if (['7', '8', '9'].includes(rank)) return 0;
+        return -1; // 10, J, Q, K, A
+    }
 
 
 
@@ -101,9 +115,18 @@ console.log('[BJ] build=dev1');
     updateBankBadge();
     updateBetLabel();
     updateTotalWager();
-    setStatus('Loading deck…');
-    await loadDeckTheme('style_1');
+    setStatus('Loading decks…');
+    const selectedDeck = await populateDeckMenu();
+
+    if (selectedDeck === 'text') {
+        cardTextures = {};
+        deckBackImage = '';
+    } else {
+        await loadDeckTheme(selectedDeck);
+    }
     setStatus('Place your bet to begin.');
+
+
     buildShoe();
     updateShoeInfo();
 
@@ -140,12 +163,85 @@ console.log('[BJ] build=dev1');
         updateBankBadge();
         setStatus('Bank reset to 500 chips.');
     });
+    const deckSelectEl = document.getElementById('deckSelect');
+
+    deckSelectEl?.addEventListener('change', async () => {
+        const val = deckSelectEl.value;
+        localStorage.setItem(DECK_KEY, val);
+
+        if (val === 'text') {
+            cardTextures = {};
+            deckBackImage = '';
+        } else {
+            await loadDeckTheme(val);
+        }
+
+        // Re-render table so already-dealt cards update immediately
+        renderTable(roundActive); // keep hole-card hidden behavior consistent
+        setStatus(`Deck changed to ${val === 'text' ? 'Text Only' : val}.`);
+    });
+
 
     // ---- Helpers ----
     function setStatus(msg, type = 'info') {
         statusEl.textContent = msg;
         statusEl.className = `toast ${type}`;
     }
+    async function populateDeckMenu() {
+        const deckSelectEl = document.getElementById('deckSelect');
+        if (!deckSelectEl) return;
+
+        try {
+            const res = await fetch('assets/decks/manifest.json', { cache: 'no-store' });
+            if (!res.ok) throw new Error(`Manifest load failed: ${res.status}`);
+            const manifest = await res.json();
+
+            deckSelectEl.innerHTML = ''; // clear existing
+            for (const deck of manifest.decks) {
+                const opt = document.createElement('option');
+                opt.value = deck.id;
+                opt.textContent = deck.name;
+                deckSelectEl.appendChild(opt);
+            }
+
+            // restore saved preference or use manifest default
+            const savedDeck = localStorage.getItem(DECK_KEY) || manifest.default || manifest.decks[0]?.id || 'style_1';
+            deckSelectEl.value = savedDeck;
+            localStorage.setItem(DECK_KEY, savedDeck);
+            return savedDeck;
+        } catch (err) {
+            console.warn('Deck manifest failed to load:', err);
+            // fallback default
+            if (deckSelectEl.options.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = 'style_1';
+                opt.textContent = 'Style 1 (Images)';
+                deckSelectEl.appendChild(opt);
+                const opt2 = document.createElement('option');
+                opt2.value = 'text';
+                opt2.textContent = 'Text Only';
+                deckSelectEl.appendChild(opt2);
+            }
+            return 'style_1';
+        }
+    }
+
+    deckSelectEl?.addEventListener('change', async () => {
+        const val = deckSelectEl.value;
+        localStorage.setItem(DECK_KEY, val);
+
+        if (val === 'text') {
+            cardTextures = {};
+            deckBackImage = '';
+        } else {
+            await loadDeckTheme(val);
+        }
+
+        renderTable(roundActive);
+        setStatus(`Deck changed to ${val === 'text' ? 'Text Only' : val}.`);
+    });
+
+
     function updateBankBadge() {
         bankBadgeEl.textContent = `Bank: ${bank} chips`;
         bankBadgeEl.className = 'badge';
@@ -172,7 +268,9 @@ console.log('[BJ] build=dev1');
         }
         shuffle(shoe);
         discard = [];
+        runningCount = 0; // <-- add this
     }
+
     function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = (Math.random() * (i + 1)) | 0;
@@ -187,8 +285,13 @@ console.log('[BJ] build=dev1');
             setStatus('Shuffling the shoe…', 'info');
         }
         const c = shoe.pop();
+
+        // NEW: update Hi-Lo on every exposed card
+        runningCount += hiLoValue(c.r);
+
         return c;
     }
+
     function cardValue(r) {
         if (r === 'A') return 11;
         if (['K', 'Q', 'J'].includes(r)) return 10;
@@ -328,7 +431,26 @@ console.log('[BJ] build=dev1');
         const used = total - remaining;
         const pct = Math.round((used / total) * 100);
         shoeInfoEl.textContent = `${remaining}/${total} cards left (${pct}% dealt)`;
+
+        // NEW: True Count = running / decks remaining
+        const decksRemaining = Math.max(remaining / 52, 0.25); // floor to avoid divide-by-very-small
+        const trueCount = runningCount / decksRemaining;
+
+        // display like: "+5 / +1.7"
+        const tcDisplay = (trueCount >= 0 ? '+' : '') + (Math.round(trueCount * 10) / 10).toFixed(1);
+        if (countInfoEl) countInfoEl.textContent = `${runningCount >= 0 ? '+' : ''}${runningCount} / ${tcDisplay}`;
+
+        // label: Hot / Neutral / Cold
+        let label = 'Neutral';
+        if (trueCount >= 2) label = 'Hot';
+        else if (trueCount <= -2) label = 'Cold';
+
+        if (countLabelEl) {
+            countLabelEl.textContent = label;
+            countLabelEl.setAttribute('data-state', label); // drives CSS color
+        }
     }
+
 
     // ---- Round flow ----
     function onDeal() {
@@ -582,6 +704,12 @@ console.log('[BJ] build=dev1');
         dealerScoreEl.textContent = 'Score: —';
         playerScoreEl.textContent = 'Score: —';
     }
+
+    // ---- Back Button ----
+    document.getElementById('backButton')?.addEventListener('click', () => {
+        window.location.href = 'home.html';
+    });
+
 
     // initial passive render
     renderHandsSimpleWhenNoGame();

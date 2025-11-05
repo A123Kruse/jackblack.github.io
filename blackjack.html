@@ -22,10 +22,20 @@
             <div class="chip">21</div>
             <h1 class="logo-title">Blackjack</h1>
         </div>
+
         <div class="right cluster">
+            <button id="backButton" class="back-button btn-secondary btn">⮐ Back to Home</button>
+
+            <label for="deckSelect" class="muted">Deck:</label>
+            <select id="deckSelect" class="select"></select>
+
             <span class="badge" id="bankBadge" title="Your chip balance"></span>
         </div>
+
     </header>
+
+
+
 
     <main class="container stack">
         <section class="panel">
@@ -96,9 +106,17 @@
                     <button class="btn-secondary btn" id="doubleBtn" disabled>Double</button>
                     <button class="btn-secondary btn" id="splitBtn" disabled>Split</button>
                     <button class="btn-secondary btn" id="insuranceBtn" disabled>Take Insurance</button>
+                    <button class="btn-secondary btn" id="changeDeckBtn" title="Switch card style">Change Deck</button>
                     <button class="btn-danger btn" id="resetBankBtn" title="Reset bank to 500">Reset Bank</button>
+
                 </div>
-                <p class="panel-subtle mt-2"><span class="muted">Shoe:</span> <span id="shoeInfo">—</span></p>
+                <p class="panel-subtle mt-2">
+                    <span class="muted">Shoe:</span> <span id="shoeInfo">—</span>
+                    <span class="muted"> | Count:</span>
+                    <strong id="countInfo">—</strong>
+                    <span class="muted"> (</span><strong id="countLabel">Neutral</strong><span class="muted">)</span>
+                </p>
+
             </div>
         </section>
     </main>
